@@ -9,6 +9,10 @@
   <meta property="og:image" content="https://pin.it/2Y2HWgX32">
   <meta property="og:url" content="https://zleakujkogochcesz.github.io/">
   <meta property="og:type" content="website">
+
+  <!-- Font Awesome (ikony) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papFfJGcxkZpL29rPTsKMkPlVK7nFqSBJ+5q0Wa1ZqOTBt1smZv4Km4g3fsy29FQpEMMZB+EPjCZwZZXIo2yvg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,7 +23,24 @@
       align-items: center;
       height: 100vh;
       padding: 1rem;
+      overflow-x: hidden;
     }
+
+    @keyframes fade-in {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in {
+      animation: fade-in 1s ease-out forwards;
+    }
+
     .container {
       background: #222;
       padding: 2rem;
@@ -27,7 +48,9 @@
       width: 100%;
       max-width: 500px;
       box-shadow: 0 0 10px #000;
+      opacity: 0;
     }
+
     input, textarea {
       width: 100%;
       padding: 1rem;
@@ -37,6 +60,7 @@
       resize: none;
       font-size: 1rem;
     }
+
     button {
       margin-top: 1rem;
       width: 100%;
@@ -48,14 +72,45 @@
       border-radius: 5px;
       cursor: pointer;
     }
+
     .status {
       margin-top: 1rem;
       text-align: center;
     }
+
+    .whatsapp-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #25D366;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 0 10px #25D366;
+      z-index: 1000;
+      transition: background-color 0.3s ease;
+      opacity: 0;
+    }
+
+    .whatsapp-button:hover {
+      background-color: #1ebc59;
+    }
+
+    .whatsapp-button i {
+      font-size: 1.2rem;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container fade-in">
     <h2>Wyślij anonimowy leak. Leaki bez podanego ip nie będą wrzucane.</h2>
     <label for="nick">Twój nick:</label>
     <input type="text" id="nick" placeholder="np. ddoslover">
@@ -64,6 +119,11 @@
     <button onclick="sendMessage()">Wyślij</button>
     <div class="status" id="status"></div>
   </div>
+
+  <a href="https://whatsapp.com/channel/0029Vb5rm3PH5JM2K7E7eR2O" target="_blank" class="whatsapp-button fade-in">
+    <i class="fab fa-whatsapp"></i>
+    Dołącz do kanału na WhatsApp
+  </a>
 
   <script>
     const apiURL = 'https://zelakuj-backend.onrender.com/send';
@@ -125,6 +185,16 @@
         status.style.color = 'red';
       });
     }
+
+    // Opóźnienie renderowania fade-in
+    window.addEventListener('DOMContentLoaded', () => {
+      const elements = document.querySelectorAll('.fade-in');
+      elements.forEach((el, i) => {
+        setTimeout(() => {
+          el.style.opacity = '1';
+        }, i * 300);
+      });
+    });
   </script>
 </body>
 </html>
