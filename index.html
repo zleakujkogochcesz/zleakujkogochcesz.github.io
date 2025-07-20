@@ -10,10 +10,9 @@
   <meta property="og:url" content="https://zleakujkogochcesz.github.io/">
   <meta property="og:type" content="website">
 
-  <!-- Font: Cinzel Decorative -->
+  <!-- Fonty -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
-  <!-- Font Awesome (ikony) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-papFfJGcxkZpL29rPTsKMkPlVK7nFqSBJ+5q0Wa1ZqOTBt1smZv4Km4g3fsy29FQpEMMZB+EPjCZwZZXIo2yvg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <style>
     body {
@@ -21,7 +20,7 @@
       background: #111;
       color: #fff;
       margin: 0;
-      padding: 2rem 1rem;
+      padding: 2rem 1rem 4rem;
     }
 
     h1.title {
@@ -34,14 +33,8 @@
     }
 
     @keyframes fade-in {
-      0% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .fade-in {
@@ -53,7 +46,7 @@
       padding: 2rem;
       border-radius: 10px;
       max-width: 500px;
-      margin: 0 auto;
+      margin: 0 auto 3rem;
       box-shadow: 0 0 10px #000;
       opacity: 0;
     }
@@ -119,6 +112,35 @@
     .whatsapp-button i {
       font-size: 1.2rem;
     }
+
+    .latest-messages {
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background-color: #1a1a1a;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000;
+    }
+
+    .latest-messages h3 {
+      text-align: center;
+      color: #25D366;
+      margin-bottom: 1rem;
+    }
+
+    .message {
+      background-color: #2a2a2a;
+      padding: 1rem;
+      margin-bottom: 0.5rem;
+      border-left: 4px solid #25D366;
+      border-radius: 5px;
+    }
+
+    .message strong {
+      display: block;
+      color: #25D366;
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -128,7 +150,7 @@
   <div class="container fade-in" id="formBox">
     <h2>Wyślij anonimowy leak. Leaki bez podanego ip nie będą wrzucane.</h2>
     <label for="nick">Twój nick:</label>
-    <input type="text" id="nick" placeholder="np. leaker">
+    <input type="text" id="nick" placeholder="np. ddoslover">
     <label for="message">Leak:</label>
     <textarea id="message" placeholder="Wpisz wiadomość..."></textarea>
     <button onclick="sendMessage()">Wyślij</button>
@@ -136,12 +158,17 @@
   </div>
 
   <a href="https://whatsapp.com/channel/0029Vb5rm3PH5JM2K7E7eR2O" target="_blank" class="whatsapp-button fade-in" id="whatsappBtn">
-    <i class="fab fa-whatsapp"></i>
-    Dołącz do kanału na WhatsApp
+    <i class="fab fa-whatsapp"></i> Dołącz do kanału na WhatsApp
   </a>
+
+  <div class="latest-messages fade-in" id="latest">
+    <h3>Ostatnie wiadomości</h3>
+    <div id="messages"></div>
+  </div>
 
   <script>
     const apiURL = 'https://zelakuj-backend.onrender.com/send';
+    const latestURL = 'https://zelakuj-backend.onrender.com/latest';
     let canSend = true;
 
     async function sendMessage() {
@@ -190,19 +217,39 @@
             canSend = true;
             status.textContent = '';
           }, 30000);
+          fetchLatestMessages(); // odśwież listę
         } else {
           status.textContent = 'Błąd podczas wysyłania wiadomości.';
           status.style.color = 'red';
         }
       })
-      .catch(error => {
+      .catch(() => {
         status.textContent = 'Nie udało się połączyć z serwerem.';
         status.style.color = 'red';
       });
     }
 
-    // Pokazywanie przycisku WhatsApp po scrollu
+    async function fetchLatestMessages() {
+      try {
+        const res = await fetch(latestURL);
+        const messages = await res.json();
+        const container = document.getElementById('messages');
+        container.innerHTML = '';
+
+        messages.slice(0, 3).forEach(msg => {
+          const div = document.createElement('div');
+          div.className = 'message';
+          div.innerHTML = `<strong>${msg.nick}</strong>${msg.message}`;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.warn('Nie udało się pobrać wiadomości.');
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
+      fetchLatestMessages();
+
       const btn = document.getElementById('whatsappBtn');
       const form = document.getElementById('formBox');
 
@@ -217,14 +264,6 @@
       }, { threshold: 0 });
 
       observer.observe(form);
-
-      // fade-in dla elementów
-      const fadeElements = document.querySelectorAll('.fade-in');
-      fadeElements.forEach((el, i) => {
-        setTimeout(() => {
-          el.style.opacity = '1';
-        }, i * 300);
-      });
     });
   </script>
 </body>
