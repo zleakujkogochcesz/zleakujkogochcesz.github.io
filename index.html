@@ -23,13 +23,22 @@
       padding: 2rem 1rem 4rem;
     }
 
-    h1.title {
+    h1.title, h2.section-title {
       font-family: 'Cinzel Decorative', cursive;
-      font-size: 2.5rem;
       text-align: center;
-      margin-bottom: 2rem;
       color: gold;
       text-shadow: 0 0 10px #000;
+    }
+
+    h1.title {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    h2.section-title {
+      font-size: 2rem;
+      margin-top: 4rem;
+      margin-bottom: 1rem;
     }
 
     @keyframes fade-in {
@@ -59,6 +68,8 @@
       border: none;
       resize: none;
       font-size: 1rem;
+      background-color: #333;
+      color: #fff;
     }
 
     button {
@@ -66,9 +77,10 @@
       width: 100%;
       padding: 1rem;
       border: none;
-      background: #5865F2;
-      color: #fff;
+      background: gold;
+      color: #000;
       font-size: 1rem;
+      font-weight: bold;
       border-radius: 5px;
       cursor: pointer;
     }
@@ -87,14 +99,14 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: #25D366;
-      color: white;
+      background-color: gold;
+      color: black;
       padding: 1rem 2rem;
       border-radius: 30px;
       font-size: 1rem;
       font-weight: bold;
       text-decoration: none;
-      box-shadow: 0 0 10px #25D366;
+      box-shadow: 0 0 10px gold;
       z-index: 1000;
       transition: background-color 0.3s ease, opacity 0.5s ease;
       opacity: 0;
@@ -106,40 +118,23 @@
     }
 
     .whatsapp-button:hover {
-      background-color: #1ebc59;
+      background-color: #e6c200;
     }
 
     .whatsapp-button i {
       font-size: 1.2rem;
     }
 
-    .latest-messages {
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 1rem;
+    .about {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem;
       background-color: #1a1a1a;
       border-radius: 10px;
       box-shadow: 0 0 10px #000;
-    }
-
-    .latest-messages h3 {
-      text-align: center;
-      color: #25D366;
-      margin-bottom: 1rem;
-    }
-
-    .message {
-      background-color: #2a2a2a;
-      padding: 1rem;
-      margin-bottom: 0.5rem;
-      border-left: 4px solid #25D366;
-      border-radius: 5px;
-    }
-
-    .message strong {
-      display: block;
-      color: #25D366;
-      margin-bottom: 0.5rem;
+      color: #ddd;
+      font-size: 1rem;
+      line-height: 1.6;
     }
   </style>
 </head>
@@ -161,14 +156,15 @@
     <i class="fab fa-whatsapp"></i> Dołącz do kanału na WhatsApp
   </a>
 
-  <div class="latest-messages fade-in" id="latest">
-    <h3>Ostatnie wiadomości</h3>
-    <div id="messages"></div>
+  <h2 class="section-title">O Nas</h2>
+  <div class="about fade-in">
+    <p><strong>Zleakuj Kogo Chcesz</strong> to anonimowa platforma do przesyłania wiadomości – tzw. leaków – bez potrzeby logowania czy ujawniania swojej tożsamości.</p>
+    <p>Naszym celem jest zapewnienie pełnej anonimowości użytkowników oraz stworzenie przestrzeni, w której można podzielić się informacjami bez cenzury i strachu.</p>
+    <p>Nie zapisujemy adresów IP, a każdy leak trafia do weryfikacji przed publikacją. Nasza społeczność żyje dzięki Tobie – więc jeśli masz coś do powiedzenia, nie czekaj!</p>
   </div>
 
   <script>
     const apiURL = 'https://zelakuj-backend.onrender.com/send';
-    const latestURL = 'https://zelakuj-backend.onrender.com/latest';
     let canSend = true;
 
     async function sendMessage() {
@@ -217,7 +213,6 @@
             canSend = true;
             status.textContent = '';
           }, 30000);
-          fetchLatestMessages(); // odśwież listę
         } else {
           status.textContent = 'Błąd podczas wysyłania wiadomości.';
           status.style.color = 'red';
@@ -229,27 +224,7 @@
       });
     }
 
-    async function fetchLatestMessages() {
-      try {
-        const res = await fetch(latestURL);
-        const messages = await res.json();
-        const container = document.getElementById('messages');
-        container.innerHTML = '';
-
-        messages.slice(0, 3).forEach(msg => {
-          const div = document.createElement('div');
-          div.className = 'message';
-          div.innerHTML = `<strong>${msg.nick}</strong>${msg.message}`;
-          container.appendChild(div);
-        });
-      } catch (err) {
-        console.warn('Nie udało się pobrać wiadomości.');
-      }
-    }
-
     document.addEventListener('DOMContentLoaded', () => {
-      fetchLatestMessages();
-
       const btn = document.getElementById('whatsappBtn');
       const form = document.getElementById('formBox');
 
