@@ -9,7 +9,9 @@
   <meta property="og:image" content="https://pin.it/2Y2HWgX32">
   <meta property="og:url" content="https://zleakujkogochcesz.github.io/">
   <meta property="og:type" content="website">
+
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,40 +20,88 @@
       margin: 0;
       padding: 2rem 1rem 4rem;
     }
+
     h1.title, h2.section-title {
       font-family: 'Cinzel Decorative', cursive;
       text-align: center;
       color: gold;
       text-shadow: 0 0 10px #000;
     }
-    h1.title { font-size: 2.5rem; margin-bottom: 2rem; }
-    h2.section-title { font-size: 2rem; margin-top: 4rem; margin-bottom: 1rem; }
+
+    h1.title {
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+    }
+
+    h2.section-title {
+      font-size: 2rem;
+      margin-top: 4rem;
+      margin-bottom: 1rem;
+    }
+
     .container {
-      background: #222; padding: 2rem; border-radius: 10px;
-      max-width: 600px; margin: 0 auto 3rem; box-shadow: 0 0 10px #000;
+      background: #222;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: 0 auto 3rem;
+      box-shadow: 0 0 10px #000;
     }
+
     label {
-      margin-top: 1rem; display: block; font-weight: bold;
+      margin-top: 1rem;
+      display: block;
+      font-weight: bold;
     }
+
     input, textarea {
-      width: 100%; padding: 1rem; margin-top: 0.3rem;
-      border-radius: 5px; border: none; resize: none;
-      font-size: 1rem; background-color: #333; color: #fff;
+      width: 100%;
+      padding: 1rem;
+      margin-top: 0.3rem;
+      border-radius: 5px;
+      border: none;
+      resize: none;
+      font-size: 1rem;
+      background-color: #333;
+      color: #fff;
     }
+
     button {
-      margin-top: 1.5rem; width: 100%; padding: 1rem;
-      border: none; background: gold; color: #000;
-      font-size: 1rem; font-weight: bold; border-radius: 5px;
+      margin-top: 1.5rem;
+      width: 100%;
+      padding: 1rem;
+      border: none;
+      background: gold;
+      color: #000;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 5px;
       cursor: pointer;
     }
-    .status { margin-top: 1rem; text-align: center; }
-    .about {
-      max-width: 700px; margin: 0 auto; padding: 2rem;
-      background-color: #1a1a1a; border-radius: 10px;
-      box-shadow: 0 0 10px #000; color: #ddd;
-      font-size: 1rem; line-height: 1.6;
+
+    .status {
+      margin-top: 1rem;
+      text-align: center;
     }
-    .note { text-align: center; font-style: italic; margin-bottom: 1rem; color: #ccc; }
+
+    .about {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 2rem;
+      background-color: #1a1a1a;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #000;
+      color: #ddd;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .note {
+      text-align: center;
+      font-style: italic;
+      margin-bottom: 1rem;
+      color: #ccc;
+    }
   </style>
 </head>
 <body>
@@ -125,16 +175,21 @@
       const senderCity = location.city || '-';
       const senderCountry = location.country_name || '-';
 
-      const content =
-        `| 👤 Twój Nick | ${nick} |\n` +
+      const message =
+        `📥 **Nowy Leak:**\n\n` +
+        `| Pole | Wartość |\n|------|---------|\n` +
+        `| 👤 Nick leakera | ${nick} |\n` +
         `| 🎯 Nick osoby zleakowanej | ${targetNick} |\n` +
         `| 🪪 Imię i Nazwisko | ${fullName} |\n` +
         `| 📞 Numer telefonu | ${phone} |\n` +
         `| 🌐 IP | ${ip} |\n` +
         `| 🏠 Adres | ${address} |\n` +
         `| 🧾 Inne dane | ${other} |\n` +
-        `| 🗒️ Uwagi Leakera | ${notes} |\n` +
-        `📡 **Dane o leakerze:** IP: ${senderIP}, Miasto: ${senderCity}, Kraj: ${senderCountry}`;
+        `| 🗒️ Uwagi Leakera | ${notes} |\n\n` +
+        `📡 **Informacje o Leakerze:**\n` +
+        `• IP: ${senderIP}\n` +
+        `• Miasto: ${senderCity}\n` +
+        `• Kraj: ${senderCountry}`;
 
       try {
         const res = await fetch(apiURL, {
@@ -142,7 +197,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             nick,
-            message: content,
+            message,
             ip: senderIP,
             city: senderCity,
             country: senderCountry
@@ -150,32 +205,34 @@
         });
 
         if (res.ok) {
-          status.textContent = 'Leak został wysłany!';
+          status.textContent = '✅ Leak został wysłany!';
           status.style.color = 'lightgreen';
         } else {
-          status.textContent = 'Błąd przy wysyłaniu.';
+          status.textContent = '⚠️ Błąd przy wysyłaniu.';
           status.style.color = 'orange';
         }
       } catch (err) {
-        status.textContent = 'Błąd połączenia z serwerem.';
+        status.textContent = '❌ Błąd połączenia z serwerem.';
         status.style.color = 'red';
       }
     }
 
-    // 🔒 Blokada DevTools i skrótów
-    document.addEventListener('keydown', (e) => {
+    // 🔒 Blokada DevTools
+    document.addEventListener('keydown', function(e) {
       if (
         e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-        (e.ctrlKey && e.key === 'u') ||
-        (e.ctrlKey && e.key === 's') ||
-        (e.ctrlKey && e.key === 'Shift')
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
+        (e.ctrlKey && e.key === 'U')
       ) {
         e.preventDefault();
-        return false;
+        e.stopPropagation();
       }
     });
-    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
   </script>
+
 </body>
 </html>
