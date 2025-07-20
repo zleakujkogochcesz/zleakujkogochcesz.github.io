@@ -10,7 +10,9 @@
   <meta property="og:url" content="https://zleakujkogochcesz.github.io/">
   <meta property="og:type" content="website">
 
+  <!-- Fonty -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
   <style>
     body {
@@ -39,25 +41,29 @@
       margin-bottom: 1rem;
     }
 
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fade-in 1s ease-out forwards;
+    }
+
     .container {
       background: #222;
       padding: 2rem;
       border-radius: 10px;
-      max-width: 600px;
+      max-width: 500px;
       margin: 0 auto 3rem;
       box-shadow: 0 0 10px #000;
-    }
-
-    label {
-      margin-top: 1rem;
-      display: block;
-      font-weight: bold;
+      opacity: 0;
     }
 
     input, textarea {
       width: 100%;
       padding: 1rem;
-      margin-top: 0.3rem;
+      margin-top: 0.5rem;
       border-radius: 5px;
       border: none;
       resize: none;
@@ -67,7 +73,7 @@
     }
 
     button {
-      margin-top: 1.5rem;
+      margin-top: 1rem;
       width: 100%;
       padding: 1rem;
       border: none;
@@ -84,6 +90,41 @@
       text-align: center;
     }
 
+    .whatsapp-button {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: gold;
+      color: black;
+      padding: 1rem 2rem;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 0 10px gold;
+      z-index: 1000;
+      transition: background-color 0.3s ease, opacity 0.5s ease;
+      opacity: 0;
+    }
+
+    .whatsapp-button.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .whatsapp-button:hover {
+      background-color: #e6c200;
+    }
+
+    .whatsapp-button i {
+      font-size: 1.2rem;
+    }
+
     .about {
       max-width: 700px;
       margin: 0 auto;
@@ -95,52 +136,28 @@
       font-size: 1rem;
       line-height: 1.6;
     }
-
-    .note {
-      text-align: center;
-      font-style: italic;
-      margin-bottom: 1rem;
-      color: #ccc;
-    }
   </style>
 </head>
 <body>
 
   <h1 class="title">Zleakuj Kogo Chcesz</h1>
 
-  <div class="container">
-    <p class="note">Jeżeli nie masz jakiejś informacji – wpisz <strong>"-"</strong></p>
-
-    <label for="nick">Twój Nick</label>
-    <input type="text" id="nick" placeholder="np. leaker">
-
-    <label for="targetNick">Nick osoby zleakowanej</label>
-    <input type="text" id="targetNick">
-
-    <label for="fullName">Imię i Nazwisko osoby zleakowanej</label>
-    <input type="text" id="fullName">
-
-    <label for="phone">Numer telefonu osoby zleakowanej</label>
-    <input type="text" id="phone">
-
-    <label for="ip">IP osoby zleakowanej</label>
-    <input type="text" id="ip">
-
-    <label for="address">Adres zamieszkania osoby zleakowanej</label>
-    <input type="text" id="address">
-
-    <label for="other">Inne dane</label>
-    <textarea id="other" rows="3"></textarea>
-
-    <label for="notes">Twoje Uwagi</label>
-    <textarea id="notes" rows="3"></textarea>
-
+  <div class="container fade-in" id="formBox">
+    <h2>Wyślij anonimowy leak. Leaki bez podanego ip nie będą wrzucane.</h2>
+    <label for="nick">Twój nick:</label>
+    <input type="text" id="nick" placeholder="np. ddoslover">
+    <label for="message">Leak:</label>
+    <textarea id="message" placeholder="Wpisz wiadomość..."></textarea>
     <button onclick="sendMessage()">Wyślij</button>
     <div class="status" id="status"></div>
   </div>
 
+  <a href="https://whatsapp.com/channel/0029Vb5rm3PH5JM2K7E7eR2O" target="_blank" class="whatsapp-button fade-in" id="whatsappBtn">
+    <i class="fab fa-whatsapp"></i> Dołącz do kanału na WhatsApp
+  </a>
+
   <h2 class="section-title">O Nas</h2>
-  <div class="about">
+  <div class="about fade-in">
     <p><strong>Zleakuj Kogo Chcesz</strong> to anonimowa platforma do przesyłania – tzw. leaków – bez potrzeby logowania czy ujawniania swojej tożsamości.</p>
     <p>Naszym celem jest zapewnienie pełnej anonimowości użytkowników oraz stworzenie przestrzeni, w której można podzielić się informacjami bez cenzury i strachu.</p>
     <p>Nie cenzurujemy żadnych danych, a każdy leak trafia do weryfikacji przed publikacją. Nasza społeczność żyje dzięki Tobie – więc jeśli masz kogoś do zniszczenia, nie czekaj!</p>
@@ -148,91 +165,81 @@
 
   <script>
     const apiURL = 'https://zelakuj-backend.onrender.com/send';
-
-    async function getUserLocation() {
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        if (!res.ok) throw new Error();
-        return await res.json();
-      } catch {
-        return { ip: 'Nieznane', city: 'Nieznane', country_name: 'Nieznane' };
-      }
-    }
+    let canSend = true;
 
     async function sendMessage() {
-      const nick = document.getElementById('nick').value || '-';
-      const targetNick = document.getElementById('targetNick').value || '-';
-      const fullName = document.getElementById('fullName').value || '-';
-      const phone = document.getElementById('phone').value || '-';
-      const ip = document.getElementById('ip').value || '-';
-      const address = document.getElementById('address').value || '-';
-      const other = document.getElementById('other').value || '-';
-      const notes = document.getElementById('notes').value || '-';
+      const nick = document.getElementById('nick').value.trim() || 'Anonim';
+      const message = document.getElementById('message').value.trim();
       const status = document.getElementById('status');
 
-      const location = await getUserLocation();
-      const senderIP = location.ip || '-';
-      const senderCity = location.city || '-';
-      const senderCountry = location.country_name || '-';
+      if (!message) {
+        status.textContent = 'Wiadomość nie może być pusta.';
+        status.style.color = 'orange';
+        return;
+      }
 
-      const message =
-        `📥 **Nowy Leak:**\n\n` +
-        `| Pole | Wartość |\n|------|---------|\n` +
-        `| 👤 Nick leakera | ${nick} |\n` +
-        `| 🎯 Nick osoby zleakowanej | ${targetNick} |\n` +
-        `| 🪪 Imię i Nazwisko | ${fullName} |\n` +
-        `| 📞 Numer telefonu | ${phone} |\n` +
-        `| 🌐 IP | ${ip} |\n` +
-        `| 🏠 Adres | ${address} |\n` +
-        `| 🧾 Inne dane | ${other} |\n` +
-        `| 🗒️ Uwagi Leakera | ${notes} |\n\n` +
-        `📡 **Informacje o Leakerze:**\n` +
-        `• IP: ${senderIP}\n` +
-        `• Miasto: ${senderCity}\n` +
-        `• Kraj: ${senderCountry}`;
+      if (!canSend) {
+        status.textContent = 'Poczekaj chwilę przed kolejnym wysłaniem (30s).';
+        status.style.color = 'orange';
+        return;
+      }
+
+      let ip = 'Nieznany';
+      let country = 'Nieznany';
+      let city = 'Nieznane';
 
       try {
-        const res = await fetch(apiURL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nick,
-            message,
-            ip: senderIP,
-            city: senderCity,
-            country: senderCountry
-          })
-        });
-
-        if (res.ok) {
-          status.textContent = '✅ Leak został wysłany!';
-          status.style.color = 'lightgreen';
-        } else {
-          status.textContent = '⚠️ Błąd przy wysyłaniu.';
-          status.style.color = 'orange';
-        }
-      } catch (err) {
-        status.textContent = '❌ Błąd połączenia z serwerem.';
-        status.style.color = 'red';
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        ip = data.ip || ip;
+        country = data.country_name || country;
+        city = data.city || city;
+      } catch (e) {
+        console.warn('Nie udało się pobrać danych geolokalizacji.');
       }
+
+      fetch(apiURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nick, message, ip, city, country })
+      })
+      .then(response => {
+        if (response.ok) {
+          status.textContent = 'Wiadomość została wysłana!';
+          status.style.color = 'lightgreen';
+          document.getElementById('message').value = '';
+          canSend = false;
+          setTimeout(() => {
+            canSend = true;
+            status.textContent = '';
+          }, 30000);
+        } else {
+          status.textContent = 'Błąd podczas wysyłania wiadomości.';
+          status.style.color = 'red';
+        }
+      })
+      .catch(() => {
+        status.textContent = 'Nie udało się połączyć z serwerem.';
+        status.style.color = 'red';
+      });
     }
 
-    // 🔒 Blokada DevTools
-    document.addEventListener('keydown', function(e) {
-      if (
-        e.key === 'F12' ||
-        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) ||
-        (e.ctrlKey && e.key === 'U')
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    });
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('whatsappBtn');
+      const form = document.getElementById('formBox');
 
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) {
+            btn.classList.add('show');
+          } else {
+            btn.classList.remove('show');
+          }
+        });
+      }, { threshold: 0 });
+
+      observer.observe(form);
     });
   </script>
-
 </body>
 </html>
